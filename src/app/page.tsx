@@ -285,7 +285,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold mb-8">See it in Action</h2>
             <div>
               <img
-                src="src/see-at-action.png"
+                src="/see-at-action.png"
                 alt="PDFusion in action, showing the file upload and merge interface."
                 className="rounded-xl shadow-lg mx-auto w-full max-w-[1200px]"
               />
