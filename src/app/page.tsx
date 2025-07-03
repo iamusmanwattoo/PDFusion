@@ -8,7 +8,6 @@ import { PdfUploader } from '@/components/pdf-uploader';
 import { FileList } from '@/components/file-list';
 import { MergeButton } from '@/components/merge-button';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap, ShieldCheck } from 'lucide-react';
 
@@ -284,13 +283,11 @@ export default function Home() {
         <section className="py-20 bg-muted/20">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-8">See it in Action</h2>
-            <div className="bg-card p-4 rounded-xl shadow-lg border max-w-4xl mx-auto">
-              <Image
-                src="/screenshot.png"
+            <div>
+              <img
+                src="/see-at-action.png"
                 alt="PDFusion in action, showing the file upload and merge interface."
-                width={1200}
-                height={800}
-                className="rounded-lg"
+                className="rounded-xl shadow-lg mx-auto w-full max-w-[1200px]"
               />
             </div>
             <p className="mt-4 text-sm text-muted-foreground">Merging PDFs in action</p>
