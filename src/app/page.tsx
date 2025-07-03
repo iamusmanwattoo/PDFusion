@@ -26,6 +26,7 @@ const fileToDataUri = (file: File): Promise<string> => {
 
 export default function Home() {
   const [files, setFiles] = useState<FileWithStatus[]>([]);
+  const [isMerging, setIsMerging] = useState(false);
   const { toast } = useToast();
 
   const handleFilesSelected = async (selectedFiles: File[]) => {
@@ -87,14 +88,61 @@ export default function Home() {
     setFiles(prev => prev.filter(f => f.id !== idToRemove));
   };
   
-  const handleMerge = () => {
-    // Actual merge logic is not required for this task.
-    toast({
-      title: "Merge Initiated!",
-      description: "Your files would be merged now. (This is a demo)",
+  const handleMerge = async () => {
+    const viableFiles = files.filter(f => f.status === 'viable');
+    if (viableFiles.length < 2) {
+      toast({
+        variant: 'destructive',
+        title: 'Not enough files',
+        description: 'You need at least two viable PDF files to merge.',
+      });
+      return;
+    }
+    
+    setIsMerging(true);
+
+    const formData = new FormData();
+    viableFiles.forEach(fileWithStatus => {
+      formData.append('files', fileWithStatus.file);
     });
-    // Optional: clear files after "merging"
-    // setFiles([]);
+
+    try {
+      const response = await fetch('/api/merge-pdfs', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to merge PDFs');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'merged.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Merge Successful!",
+        description: "Your merged PDF has been downloaded.",
+      });
+
+      setFiles([]);
+
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Merge Failed',
+        description: error.message || 'An unexpected error occurred.',
+      });
+    } finally {
+      setIsMerging(false);
+    }
   };
 
   return (
@@ -114,7 +162,7 @@ export default function Home() {
           {files.length > 0 && (
             <>
               <FileList files={files} onRemoveFile={handleRemoveFile} />
-              <MergeButton files={files} onMerge={handleMerge} />
+              <MergeButton files={files} onMerge={handleMerge} isMerging={isMerging} />
             </>
           )}
         </div>

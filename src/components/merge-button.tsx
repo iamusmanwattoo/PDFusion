@@ -13,14 +13,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Merge } from "lucide-react";
+import { Merge, Loader2 } from "lucide-react";
 
 type MergeButtonProps = {
   files: FileWithStatus[];
   onMerge: () => void;
+  isMerging: boolean;
 };
 
-export function MergeButton({ files, onMerge }: MergeButtonProps) {
+export function MergeButton({ files, onMerge, isMerging }: MergeButtonProps) {
   const isMergeable =
     files.length >= 2 && files.every((f) => f.status === "viable");
 
@@ -32,9 +33,13 @@ export function MergeButton({ files, onMerge }: MergeButtonProps) {
     <div className="flex justify-center pt-4">
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button size="lg" disabled={!isMergeable}>
-            <Merge className="mr-2 h-5 w-5" />
-            Merge {files.length} PDF{files.length !== 1 ? "s" : ""}
+          <Button size="lg" disabled={!isMergeable || isMerging}>
+            {isMerging ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              <Merge className="mr-2 h-5 w-5" />
+            )}
+            {isMerging ? "Merging..." : `Merge ${files.length} PDF${files.length !== 1 ? "s" : ""}`}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -42,12 +47,12 @@ export function MergeButton({ files, onMerge }: MergeButtonProps) {
             <AlertDialogTitle>Are you ready to merge?</AlertDialogTitle>
             <AlertDialogDescription>
               This action will combine {files.length} PDF files into a single
-              document.
+              document. The files will be merged in their current order.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onMerge}>Confirm & Merge</AlertDialogAction>
+            <AlertDialogAction onClick={onMerge} disabled={isMerging}>Confirm & Merge</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
