@@ -1,12 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { PdfPreflightCheckOutput } from '@/ai/flows/pdf-preflight-check';
 import { pdfPreflightCheck } from '@/ai/flows/pdf-preflight-check';
 import { useToast } from "@/hooks/use-toast";
 import { PdfUploader } from '@/components/pdf-uploader';
 import { FileList } from '@/components/file-list';
 import { MergeButton } from '@/components/merge-button';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { ArrowRight, Zap, ShieldCheck } from 'lucide-react';
 
 export type FileWithStatus = {
   file: File;
@@ -27,10 +31,47 @@ const fileToDataUri = (file: File): Promise<string> => {
 const MAX_FILES = 10;
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25MB
 
+const Header = () => (
+    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 px-8 bg-background/80 backdrop-blur-sm border-b">
+      <Link href="/" className="text-2xl font-bold text-foreground">
+        PDFusion
+      </Link>
+      <nav className="hidden md:flex items-center gap-6">
+        <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+          Pricing
+        </Link>
+      </nav>
+      <Button asChild>
+        <Link href="#merger">Get Started</Link>
+      </Button>
+    </header>
+);
+
+const Footer = () => (
+  <footer className="w-full py-8 border-t bg-background">
+    <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+      <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} PDFusion. All rights reserved.</p>
+      <div className="flex gap-4 mt-4 md:mt-0">
+        <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
+          Privacy Policy
+        </Link>
+        <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
+          Terms of Service
+        </Link>
+      </div>
+    </div>
+  </footer>
+);
+
 export default function Home() {
   const [files, setFiles] = useState<FileWithStatus[]>([]);
   const [isMerging, setIsMerging] = useState(false);
   const { toast } = useToast();
+  const mergerRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollToMerger = () => {
+    mergerRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const handleFilesSelected = async (selectedFiles: File[]) => {
     if (files.length + selectedFiles.length > MAX_FILES) {
@@ -175,27 +216,88 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4 sm:p-8">
-      <div className="w-full max-w-3xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-2 font-headline">
-            PDFusion
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Merge Your PDFs Instantly
-          </p>
-        </header>
+    <div className="flex flex-col min-h-screen bg-background">
+      <Header />
+      <main className="flex-grow pt-16">
+        <section className="pt-20 pb-20 text-center">
+            <div className="container mx-auto px-4">
+                <h1 className="text-5xl md:text-6xl font-extrabold text-foreground">
+                    PDFusion
+                </h1>
+                <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Merge your PDFs instantly and securely.
+                </p>
+                <div className="mt-8 flex justify-center gap-4">
+                    <Button size="lg" onClick={handleScrollToMerger}>
+                        Try for Free
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                    <Button size="lg" variant="outline" asChild>
+                        <Link href="/pricing">View Pricing</Link>
+                    </Button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="merger" ref={mergerRef} className="py-16 sm:py-24 bg-muted/20">
+            <div className="w-full max-w-3xl mx-auto px-4">
+                 <div className="space-y-6">
+                    <PdfUploader onFilesSelected={handleFilesSelected} />
+                    {files.length > 0 && (
+                        <>
+                        <FileList files={files} onRemoveFile={handleRemoveFile} />
+                        <MergeButton files={files} onMerge={handleMerge} isMerging={isMerging} />
+                        </>
+                    )}
+                </div>
+            </div>
+        </section>
 
-        <div className="space-y-6">
-          <PdfUploader onFilesSelected={handleFilesSelected} />
-          {files.length > 0 && (
-            <>
-              <FileList files={files} onRemoveFile={handleRemoveFile} />
-              <MergeButton files={files} onMerge={handleMerge} isMerging={isMerging} />
-            </>
-          )}
-        </div>
-      </div>
-    </main>
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">Why PDFusion?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+              <div className="flex flex-col items-center p-6">
+                <Zap className="h-10 w-10 text-primary mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Blazing Fast</h3>
+                <p className="text-muted-foreground">Your files are merged in seconds, right in your browser.</p>
+              </div>
+              <div className="flex flex-col items-center p-6">
+                <ShieldCheck className="h-10 w-10 text-primary mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Secure & Private</h3>
+                <p className="text-muted-foreground">We never see your files. Everything is processed on your device.</p>
+              </div>
+              <div className="flex flex-col items-center p-6">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-4"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <h3 className="text-xl font-semibold mb-2">No Sign Up Required</h3>
+                <p className="text-muted-foreground">Merge files instantly without creating an account.</p>
+              </div>
+              <div className="flex flex-col items-center p-6">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-4"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                <h3 className="text-xl font-semibold mb-2">Cross-Device</h3>
+                <p className="text-muted-foreground">Works on your desktop, tablet, and phone.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 bg-muted/20">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-8">See it in Action</h2>
+            <div className="bg-card p-4 rounded-lg shadow-2xl border max-w-4xl mx-auto">
+              <Image
+                src="https://placehold.co/1200x800.png"
+                alt="PDFusion screenshot"
+                width={1200}
+                height={800}
+                className="rounded-md"
+                data-ai-hint="app screenshot"
+              />
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }
