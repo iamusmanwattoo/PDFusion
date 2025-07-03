@@ -52,36 +52,41 @@ export function PdfUploader({ onFilesSelected }: PdfUploaderProps) {
   };
 
   return (
-    <div
-      onClick={handleClick}
-      onDragEnter={handleDrag}
-      onDragLeave={handleDrag}
-      onDragOver={handleDrag}
-      onDrop={handleDrop}
-      className={cn(
-        "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-input bg-card p-12 text-center shadow-lg transition-colors duration-200 ease-in-out hover:border-primary",
-        isDragActive ? "border-primary bg-accent" : ""
-      )}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        multiple
-        accept="application/pdf"
-        className="hidden"
-        onChange={handleChange}
-      />
-      <div className="flex flex-col items-center justify-center gap-4">
-        <UploadCloud className="h-12 w-12 text-muted-foreground transition-colors group-hover:text-primary" />
-        <p className="text-lg font-semibold text-foreground">
-          {isDragActive
-            ? "Drop the files here..."
-            : "Drag & drop PDF files here, or click to select"}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Only PDF files are accepted
-        </p>
+    <div className="w-full">
+      <div
+        onClick={handleClick}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        className={cn(
+          "group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-input bg-card p-12 text-center shadow-lg transition-colors duration-200 ease-in-out hover:border-primary",
+          isDragActive ? "border-primary bg-accent" : ""
+        )}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          multiple
+          accept="application/pdf"
+          className="hidden"
+          onChange={handleChange}
+        />
+        <div className="flex flex-col items-center justify-center gap-4">
+          <UploadCloud className="h-12 w-12 text-muted-foreground transition-colors group-hover:text-primary" />
+          <p className="text-lg font-semibold text-foreground">
+            {isDragActive
+              ? "Drop the files here..."
+              : "Drag & drop PDF files here, or click to select"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Only PDF files are accepted
+          </p>
+        </div>
       </div>
+      <p className="mt-2 text-center text-sm text-muted-foreground">
+        📄 Max 10 files, 25MB each.
+      </p>
     </div>
   );
 }
