@@ -24,13 +24,42 @@ const fileToDataUri = (file: File): Promise<string> => {
   });
 };
 
+const MAX_FILES = 10;
+const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25MB
+
 export default function Home() {
   const [files, setFiles] = useState<FileWithStatus[]>([]);
   const [isMerging, setIsMerging] = useState(false);
   const { toast } = useToast();
 
   const handleFilesSelected = async (selectedFiles: File[]) => {
-    const newFilesWithStatus: FileWithStatus[] = selectedFiles
+    if (files.length + selectedFiles.length > MAX_FILES) {
+      toast({
+        variant: 'destructive',
+        title: `❌ Max file limit reached (${MAX_FILES} PDFs).`,
+        description: `You can add ${MAX_FILES - files.length} more file(s).`,
+      });
+      return;
+    }
+
+    const validSizeFiles: File[] = [];
+    selectedFiles.forEach(file => {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        toast({
+          variant: 'destructive',
+          title: `❌ File too large: ${file.name}`,
+          description: 'Max size is 25MB.',
+        });
+      } else {
+        validSizeFiles.push(file);
+      }
+    });
+
+    if (validSizeFiles.length === 0) {
+      return;
+    }
+    
+    const newFilesWithStatus: FileWithStatus[] = validSizeFiles
       .filter(file => file.type === 'application/pdf')
       .filter(file => !files.some(existing => existing.id === `${file.name}-${file.lastModified}`))
       .map(file => ({
@@ -39,7 +68,7 @@ export default function Home() {
         status: 'checking',
       }));
 
-    if (newFilesWithStatus.length === 0 && selectedFiles.length > 0) {
+    if (newFilesWithStatus.length === 0 && validSizeFiles.length > 0) {
       toast({
         variant: 'destructive',
         title: 'Duplicate or Invalid Files',
