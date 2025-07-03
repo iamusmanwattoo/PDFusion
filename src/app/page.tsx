@@ -284,16 +284,16 @@ export default function Home() {
         <section className="py-20 bg-muted/20">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-8">See it in Action</h2>
-            <div className="bg-card p-4 rounded-lg shadow-2xl border max-w-4xl mx-auto">
+            <div className="bg-card p-4 rounded-xl shadow-lg border max-w-4xl mx-auto">
               <Image
-                src="https://placehold.co/1200x800.png"
-                alt="PDFusion screenshot"
+                src="/screenshot.png"
+                alt="PDFusion in action, showing the file upload and merge interface."
                 width={1200}
                 height={800}
-                className="rounded-md"
-                data-ai-hint="app screenshot"
+                className="rounded-lg"
               />
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">Merging PDFs in action</p>
           </div>
         </section>
       </main>
