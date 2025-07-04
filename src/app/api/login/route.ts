@@ -13,8 +13,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
+    const trimmedEmail = email.trim().toLowerCase();
+
     const usersRef = collection(db, 'users');
-    const q = query(usersRef, where('email', '==', email.toLowerCase()));
+    const q = query(usersRef, where('email', '==', trimmedEmail));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {

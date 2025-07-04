@@ -21,9 +21,11 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Password must be at least 6 characters long' }, { status: 400 });
     }
 
+    const trimmedEmail = email.trim().toLowerCase();
+
     const usersRef = collection(db, 'users');
     // Normalize email to prevent duplicates like 'test@test.com' and 'Test@test.com'
-    const q = query(usersRef, where('email', '==', email.toLowerCase()));
+    const q = query(usersRef, where('email', '==', trimmedEmail));
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
     const passwordHash = await bcryptjs.hash(password, salt);
 
     await addDoc(usersRef, {
-      email: email.toLowerCase(),
+      email: trimmedEmail,
       passwordHash: passwordHash,
       createdAt: serverTimestamp(),
       mergeCount: 0,
