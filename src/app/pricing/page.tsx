@@ -5,8 +5,8 @@ import { Check } from 'lucide-react';
   
 export default function PricingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background pt-16">
-        <section className="text-center pt-16">
+    <div className="flex flex-col flex-grow bg-background">
+        <section className="text-center">
           <div className="container mx-auto px-4">
             <h1 className="text-5xl font-extrabold text-foreground">
               Simple, Transparent Pricing

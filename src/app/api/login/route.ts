@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
@@ -40,11 +40,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Internal server configuration error' }, { status: 500 });
     }
 
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      jwtSecret,
-      { expiresIn: '7d' } 
-    );
+    const secret = new TextEncoder().encode(jwtSecret);
+    const token = await new jose.SignJWT({ userId: user.id, email: user.email })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('7d')
+      .sign(secret);
 
     cookies().set('auth-token', token, {
       httpOnly: true,

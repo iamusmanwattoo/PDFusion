@@ -35,7 +35,7 @@ export default function RootLayout({
         >
             <div className="flex flex-col min-h-screen">
                 <Header isAuthenticated={isAuthenticated} />
-                <main className="flex-grow">
+                <main className="flex-grow pt-16 flex flex-col">
                     {children}
                 </main>
                 <Footer />

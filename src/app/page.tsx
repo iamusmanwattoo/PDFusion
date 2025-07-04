@@ -4,7 +4,7 @@ import { ArrowRight, Zap, ShieldCheck } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-background pt-16">
+    <div className="flex flex-col flex-grow bg-background">
         <section className="pt-20 pb-20 text-center">
             <div className="container mx-auto px-4">
                 <h1 className="text-5xl md:text-6xl font-extrabold text-foreground">

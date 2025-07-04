@@ -12,8 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
 import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
@@ -67,9 +65,7 @@ export default function RegisterPage() {
     }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-grow flex items-center justify-center pt-16">
+    <div className="flex items-center justify-center flex-grow">
         <Card className="w-full max-w-sm mx-4">
           <CardHeader className="text-center">
             <CardTitle>Create an Account</CardTitle>
@@ -118,8 +114,6 @@ export default function RegisterPage() {
             </p>
           </CardContent>
         </Card>
-      </main>
-      <Footer />
     </div>
   );
 }
