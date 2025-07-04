@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import type { PdfPreflightCheckOutput } from '@/ai/flows/pdf-preflight-check';
-import { pdfPreflightCheck } from '@/ai/flows/pdf-preflight-check';
+// import type { PdfPreflightCheckOutput } from '@/ai/flows/pdf-preflight-check';
+// import { pdfPreflightCheck } from '@/ai/flows/pdf-preflight-check';
 import { useToast } from "@/hooks/use-toast";
 import { PdfUploader } from '@/components/pdf-uploader';
 import { FileList } from '@/components/file-list';
@@ -14,7 +14,11 @@ export type FileWithStatus = {
   file: File;
   id: string;
   status: 'checking' | 'viable' | 'error';
-  preflight?: PdfPreflightCheckOutput;
+  preflight?: {
+    isViable: boolean;
+    issue?: string;
+    suggestion?: string;
+  };
 };
 
 const fileToDataUri = (file: File): Promise<string> => {
@@ -83,29 +87,22 @@ export default function MergerPage() {
 
     for (const newFile of newFilesWithStatus) {
       try {
-        const pdfDataUri = await fileToDataUri(newFile.file);
-        const result = await pdfPreflightCheck({
-          pdfDataUri,
-          filename: newFile.file.name,
-        });
-        
         setFiles(prev => prev.map(f => f.id === newFile.id ? {
           ...f,
-          status: result.isViable ? 'viable' : 'error',
-          preflight: result,
-        } : f));
+          status: 'viable',
+        } : f));        
 
       } catch (error) {
         console.error('Preflight check failed:', error);
-        setFiles(prev => prev.map(f => f.id === newFile.id ? {
-          ...f,
-          status: 'error',
-          preflight: {
-            isViable: false,
-            issue: 'File processing error',
-            suggestion: 'Could not read or process the file. Please try a different file.'
-          }
-        } : f));
+        // setFiles(prev => prev.map(f => f.id === newFile.id ? {
+        //   ...f,
+        //   status: 'error',
+        //   preflight: {
+        //     isViable: false,
+        //     issue: 'File processing error',
+        //     suggestion: 'Could not read or process the file. Please try a different file.'
+        //   }
+        // } : f));
         toast({
           variant: "destructive",
           title: "Error checking file",
