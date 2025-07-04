@@ -5,19 +5,40 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { cookies } from 'next/headers';
+import * as jose from 'jose';
 
 export const metadata: Metadata = {
   title: 'PDFusion - Merge Your PDFs Instantly',
   description: 'A simple and fast web app to merge multiple PDF files into one.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const cookieStore = cookies();
-  const isAuthenticated = cookieStore.has('auth-token');
+  const authToken = cookieStore.get('auth-token')?.value;
+  
+  let isAuthenticated = false;
+  let isAdmin = false;
+
+  if (authToken) {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (jwtSecret) {
+      try {
+        const secret = new TextEncoder().encode(jwtSecret);
+        const { payload } = await jose.jwtVerify(authToken, secret);
+        isAuthenticated = true;
+        if (payload.email === 'admin@pdfusion.com') {
+          isAdmin = true;
+        }
+      } catch (e) {
+        isAuthenticated = false;
+        isAdmin = false;
+      }
+    }
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -34,7 +55,7 @@ export default function RootLayout({
             disableTransitionOnChange
         >
             <div className="flex flex-col min-h-screen">
-                <Header isAuthenticated={isAuthenticated} />
+                <Header isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
                 <main className="flex-grow pt-16 flex flex-col">
                     {children}
                 </main>

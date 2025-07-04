@@ -6,11 +6,13 @@ export async function middleware(request: NextRequest) {
   const authToken = request.cookies.get('auth-token')?.value;
   const { pathname } = request.nextUrl;
 
+  const protectedRoutes = ['/merger', '/admin'];
+  const publicAuthRoutes = ['/login', '/register'];
+
   const jwtSecret = process.env.JWT_SECRET;
   if (!jwtSecret) {
     console.error('JWT_SECRET is not defined');
-    // For protected routes, redirect to login if secret is missing
-    if(pathname.startsWith('/merger')) {
+    if (protectedRoutes.some(route => pathname.startsWith(route))) {
         const loginUrl = new URL('/login', request.url)
         loginUrl.searchParams.set('error', 'Configuration-Error');
         return NextResponse.redirect(loginUrl);
@@ -21,24 +23,22 @@ export async function middleware(request: NextRequest) {
   const secret = new TextEncoder().encode(jwtSecret);
 
   let isAuthenticated = false;
-  if (authToken) {
-    try {
+  try {
+    if (authToken) {
       await jose.jwtVerify(authToken, secret);
       isAuthenticated = true;
-    } catch (err) {
-      isAuthenticated = false;
     }
+  } catch (err) {
+    isAuthenticated = false;
   }
 
-  // If trying to access a protected route and not authenticated, redirect to login
-  if (pathname.startsWith('/merger') && !isAuthenticated) {
+  if (!isAuthenticated && protectedRoutes.some(route => pathname.startsWith(route))) {
     const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('next', pathname); // Optional: redirect back after login
+    loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // If trying to access login or register page and already authenticated, redirect to merger
-  if ((pathname.startsWith('/login') || pathname.startsWith('/register')) && isAuthenticated) {
+  if (isAuthenticated && publicAuthRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/merger', request.url));
   }
   
@@ -46,5 +46,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/merger/:path*', '/login', '/register'],
+  matcher: ['/merger/:path*', '/admin/:path*', '/login', '/register'],
 }

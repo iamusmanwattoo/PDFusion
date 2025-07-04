@@ -10,9 +10,10 @@ import { useState } from 'react';
 
 type HeaderProps = {
     isAuthenticated: boolean;
+    isAdmin: boolean;
 };
 
-export const Header = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
+export const Header = ({ isAuthenticated, isAdmin }: HeaderProps) => {
     const router = useRouter();
     const { toast } = useToast();
     const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -39,6 +40,11 @@ export const Header = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
             <div className="flex items-center gap-4">
                 {isAuthenticated ? (
                     <>
+                        {isAdmin && (
+                            <Button variant="ghost" asChild>
+                               <Link href="/admin">Admin</Link>
+                            </Button>
+                        )}
                         <Button variant="ghost" asChild>
                            <Link href="/merger">Merger</Link>
                         </Button>
