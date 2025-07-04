@@ -7,8 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { PdfUploader } from '@/components/pdf-uploader';
 import { FileList } from '@/components/file-list';
 import { MergeButton } from '@/components/merge-button';
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
 
 export type FileWithStatus = {
   file: File;
@@ -174,9 +172,7 @@ export default function MergerPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-grow pt-16">
+    <div className="flex flex-col min-h-screen bg-background pt-16">
         <section id="merger" className="py-16 sm:py-24">
             <div className="w-full max-w-3xl mx-auto px-4">
                  <div className="space-y-6">
@@ -194,8 +190,6 @@ export default function MergerPage() {
                 </div>
             </div>
         </section>
-      </main>
-      <Footer />
     </div>
   );
 }

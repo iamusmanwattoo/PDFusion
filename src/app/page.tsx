@@ -1,16 +1,10 @@
-'use client';
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap, ShieldCheck } from 'lucide-react';
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-grow pt-16">
+    <div className="flex flex-col min-h-screen bg-background pt-16">
         <section className="pt-20 pb-20 text-center">
             <div className="container mx-auto px-4">
                 <h1 className="text-5xl md:text-6xl font-extrabold text-foreground">
@@ -60,8 +54,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-      </main>
-      <Footer />
     </div>
   );
 }

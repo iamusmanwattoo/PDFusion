@@ -1,6 +1,6 @@
 "use client";
 
-import type { FileWithStatus } from "@/app/page";
+import type { FileWithStatus } from "@/app/merger/page";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {

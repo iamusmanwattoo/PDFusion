@@ -2,15 +2,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check } from 'lucide-react';
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
   
 export default function PricingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-grow pt-32">
-        <section className="text-center">
+    <div className="flex flex-col min-h-screen bg-background pt-16">
+        <section className="text-center pt-16">
           <div className="container mx-auto px-4">
             <h1 className="text-5xl font-extrabold text-foreground">
               Simple, Transparent Pricing
@@ -39,7 +35,7 @@ export default function PricingPage() {
               </CardContent>
               <CardFooter>
                 <Button className="w-full" asChild>
-                    <Link href="/#merger">Start Free</Link>
+                    <Link href="/register">Start Free</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -65,8 +61,6 @@ export default function PricingPage() {
             </Card>
           </div>
         </section>
-      </main>
-      <Footer />
     </div>
   );
 }

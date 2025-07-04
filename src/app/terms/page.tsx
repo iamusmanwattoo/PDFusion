@@ -1,11 +1,8 @@
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
 
 export default function TermsOfServicePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-grow pt-32 container mx-auto px-4">
+    <div className="flex flex-col min-h-screen bg-background pt-16">
+      <main className="flex-grow pt-16 container mx-auto px-4">
         <article className="prose dark:prose-invert max-w-4xl mx-auto">
           <h1>Terms of Service</h1>
           <p>Last updated: {new Date().toLocaleDateString()}</p>
@@ -19,7 +16,6 @@ export default function TermsOfServicePage() {
           <p>In no event shall PDFusion or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on PDFusion's website.</p>
         </article>
       </main>
-      <Footer />
     </div>
   );
 }

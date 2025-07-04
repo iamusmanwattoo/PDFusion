@@ -1,11 +1,8 @@
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-grow pt-32 container mx-auto px-4">
+    <div className="flex flex-col min-h-screen bg-background pt-16">
+      <main className="flex-grow pt-16 container mx-auto px-4">
         <article className="prose dark:prose-invert max-w-4xl mx-auto">
           <h1>Privacy Policy</h1>
           <p>Last updated: {new Date().toLocaleDateString()}</p>
@@ -19,7 +16,6 @@ export default function PrivacyPolicyPage() {
           <p>If you have any questions about how we handle user data and personal information, feel free to contact us.</p>
         </article>
       </main>
-      <Footer />
     </div>
   );
 }
