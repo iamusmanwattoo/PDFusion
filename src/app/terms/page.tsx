@@ -1,37 +1,5 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-
-const Header = () => (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 px-8 bg-background/80 backdrop-blur-sm border-b">
-      <Link href="/" className="text-2xl font-bold text-foreground">
-        PDFusion
-      </Link>
-      <nav className="hidden md:flex items-center gap-6">
-        <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-          Pricing
-        </Link>
-      </nav>
-      <Button asChild>
-        <Link href="/#merger">Get Started</Link>
-      </Button>
-    </header>
-);
-  
-const Footer = () => (
-  <footer className="w-full py-8 mt-16 border-t bg-background">
-    <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-      <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} PDFusion. All rights reserved.</p>
-      <div className="flex gap-4 mt-4 md:mt-0">
-        <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
-          Privacy Policy
-        </Link>
-        <Link href="/terms" className="text-sm text-foreground hover:text-muted-foreground">
-          Terms of Service
-        </Link>
-      </div>
-    </div>
-  </footer>
-);
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
 
 export default function TermsOfServicePage() {
   return (

@@ -10,6 +10,8 @@ import { MergeButton } from '@/components/merge-button';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap, ShieldCheck } from 'lucide-react';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
 
 export type FileWithStatus = {
   file: File;
@@ -29,38 +31,6 @@ const fileToDataUri = (file: File): Promise<string> => {
 
 const MAX_FILES = 10;
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25MB
-
-const Header = () => (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 px-8 bg-background/80 backdrop-blur-sm border-b">
-      <Link href="/" className="text-2xl font-bold text-foreground">
-        PDFusion
-      </Link>
-      <nav className="hidden md:flex items-center gap-6">
-        <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-          Pricing
-        </Link>
-      </nav>
-      <Button asChild>
-        <Link href="#merger">Get Started</Link>
-      </Button>
-    </header>
-);
-
-const Footer = () => (
-  <footer className="w-full py-8 border-t bg-background">
-    <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-      <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} PDFusion. All rights reserved.</p>
-      <div className="flex gap-4 mt-4 md:mt-0">
-        <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
-          Privacy Policy
-        </Link>
-        <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
-          Terms of Service
-        </Link>
-      </div>
-    </div>
-  </footer>
-);
 
 export default function Home() {
   const [files, setFiles] = useState<FileWithStatus[]>([]);
@@ -277,20 +247,6 @@ export default function Home() {
                 <p className="text-muted-foreground">Works on your desktop, tablet, and phone.</p>
               </div>
             </div>
-          </div>
-        </section>
-
-        <section className="py-20 bg-muted/20">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-8">See it in Action</h2>
-            <div>
-              <img
-                src="/see-at-action.png"
-                alt="PDFusion in action, showing the file upload and merge interface."
-                className="rounded-xl shadow-lg mx-auto w-full max-w-[1200px]"
-              />
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">Merging PDFs in action</p>
           </div>
         </section>
       </main>
