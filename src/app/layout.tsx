@@ -5,46 +5,17 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { cookies } from 'next/headers';
-import * as jose from 'jose';
 
 export const metadata: Metadata = {
   title: 'PDFusion - Merge Your PDFs Instantly',
   description: 'A simple and fast web app to merge multiple PDF files into one.',
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = cookies();
-  const authToken = cookieStore.get('auth-token')?.value;
-  
-  let isAuthenticated = false;
-  let isAdmin = false;
-
-  // This server-side check is crucial to prevent UI flickering on page load.
-  // It securely verifies the token and passes the auth state to the Header component.
-  if (authToken) {
-    const jwtSecret = process.env.JWT_SECRET;
-    if (jwtSecret) {
-      try {
-        const secret = new TextEncoder().encode(jwtSecret);
-        const { payload } = await jose.jwtVerify(authToken, secret);
-        isAuthenticated = true;
-        if (payload.email === 'admin@pdfusion.com') {
-          isAdmin = true;
-        }
-      } catch (e) {
-        // Token is invalid, expired, or secret is wrong.
-        // Middleware will handle the redirect, but we ensure UI state is not authenticated.
-        isAuthenticated = false;
-        isAdmin = false;
-      }
-    }
-  }
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -60,7 +31,7 @@ export default async function RootLayout({
             disableTransitionOnChange
         >
             <div className="flex flex-col min-h-screen">
-                <Header isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
+                <Header />
                 <main className="flex-grow pt-16 flex flex-col">
                     {children}
                 </main>

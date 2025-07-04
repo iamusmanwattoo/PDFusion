@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,7 +36,7 @@ export default function PricingPage() {
               </CardContent>
               <CardFooter>
                 <Button className="w-full" asChild>
-                    <Link href="/register">Start Free</Link>
+                    <Link href="/merger">Start Free</Link>
                 </Button>
               </CardFooter>
             </Card>
