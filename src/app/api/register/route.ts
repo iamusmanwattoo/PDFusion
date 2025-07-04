@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -11,21 +12,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
     
-    // Basic email validation
     if (!/\S+@\S+\.\S+/.test(email)) {
         return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
     }
 
-    // Basic password validation
     if (password.length < 6) {
         return NextResponse.json({ error: 'Password must be at least 6 characters long' }, { status: 400 });
     }
 
-    const trimmedEmail = email.trim().toLowerCase();
-
+    const normalizedEmail = email.trim().toLowerCase();
     const usersRef = collection(db, 'users');
-    // Normalize email to prevent duplicates like 'test@test.com' and 'Test@test.com'
-    const q = query(usersRef, where('email', '==', trimmedEmail));
+    
+    const q = query(usersRef, where('email', '==', normalizedEmail));
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
@@ -36,7 +34,7 @@ export async function POST(req: NextRequest) {
     const passwordHash = await bcryptjs.hash(password, salt);
 
     await addDoc(usersRef, {
-      email: trimmedEmail,
+      email: normalizedEmail,
       passwordHash: passwordHash,
       createdAt: serverTimestamp(),
       mergeCount: 0,

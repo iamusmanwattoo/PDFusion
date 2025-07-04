@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -13,10 +14,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    const trimmedEmail = email.trim().toLowerCase();
-
+    const normalizedEmail = email.trim().toLowerCase();
     const usersRef = collection(db, 'users');
-    const q = query(usersRef, where('email', '==', trimmedEmail));
+
+    const q = query(usersRef, where('email', '==', normalizedEmail));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
