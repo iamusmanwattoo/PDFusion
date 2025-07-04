@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import bcryptjs from 'bcryptjs';
+import * as jose from 'jose';
+import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,12 +35,33 @@ export async function POST(req: NextRequest) {
     const salt = await bcryptjs.genSalt(10);
     const passwordHash = await bcryptjs.hash(password, salt);
 
-    await addDoc(usersRef, {
+    const newUserRef = await addDoc(usersRef, {
       email: normalizedEmail,
       passwordHash: passwordHash,
       createdAt: serverTimestamp(),
       mergeCount: 0,
       lastMergeDate: null,
+    });
+    
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error('JWT_SECRET is not defined');
+      return NextResponse.json({ error: 'Internal server configuration error' }, { status: 500 });
+    }
+
+    const secret = new TextEncoder().encode(jwtSecret);
+    const token = await new jose.SignJWT({ userId: newUserRef.id, email: normalizedEmail })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('7d')
+      .sign(secret);
+      
+    cookies().set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: '/',
     });
 
     return NextResponse.json({ success: true }, { status: 201 });

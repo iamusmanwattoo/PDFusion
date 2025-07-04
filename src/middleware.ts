@@ -1,6 +1,9 @@
+
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import * as jose from 'jose'
+
+const ADMIN_EMAIL = 'admin@pdfusion.com';
 
 export async function middleware(request: NextRequest) {
   const authToken = request.cookies.get('auth-token')?.value;
@@ -22,26 +25,32 @@ export async function middleware(request: NextRequest) {
   
   const secret = new TextEncoder().encode(jwtSecret);
 
-  let isAuthenticated = false;
-  try {
-    if (authToken) {
-      await jose.jwtVerify(authToken, secret);
-      isAuthenticated = true;
-    }
-  } catch (err) {
-    isAuthenticated = false;
-  }
-
-  if (!isAuthenticated && protectedRoutes.some(route => pathname.startsWith(route))) {
+  if (!authToken && protectedRoutes.some(route => pathname.startsWith(route))) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (isAuthenticated && publicAuthRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.redirect(new URL('/merger', request.url));
+  if (authToken) {
+    try {
+      const { payload } = await jose.jwtVerify(authToken, secret);
+      const isAuthenticated = true;
+      const isAdmin = payload.email === ADMIN_EMAIL;
+
+      if (isAuthenticated && publicAuthRoutes.some(route => pathname.startsWith(route))) {
+        return NextResponse.redirect(new URL('/merger', request.url));
+      }
+
+      if (pathname.startsWith('/admin') && !isAdmin) {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    } catch (err) {
+      const response = NextResponse.redirect(new URL('/login', request.url));
+      response.cookies.set('auth-token', '', { expires: new Date(0), path: '/' });
+      return response;
+    }
   }
-  
+
   return NextResponse.next();
 }
 

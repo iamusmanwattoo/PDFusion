@@ -1,3 +1,4 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -23,6 +24,8 @@ export default async function RootLayout({
   let isAuthenticated = false;
   let isAdmin = false;
 
+  // This server-side check is crucial to prevent UI flickering on page load.
+  // It securely verifies the token and passes the auth state to the Header component.
   if (authToken) {
     const jwtSecret = process.env.JWT_SECRET;
     if (jwtSecret) {
@@ -34,6 +37,8 @@ export default async function RootLayout({
           isAdmin = true;
         }
       } catch (e) {
+        // Token is invalid, expired, or secret is wrong.
+        // Middleware will handle the redirect, but we ensure UI state is not authenticated.
         isAuthenticated = false;
         isAdmin = false;
       }

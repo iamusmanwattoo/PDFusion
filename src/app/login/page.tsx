@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -41,16 +42,21 @@ export default function LoginPage() {
                 body: JSON.stringify(values),
             });
             
+            const data = await response.json();
+
             if (response.ok) {
-                toast({ title: 'Login Successful!', description: "You are now logged in."});
-                router.push('/merger');
-                router.refresh(); // Refresh to update server-side auth state
+                toast({ title: 'Login Successful!', description: "You're now logged in."});
+                if (data.isAdmin) {
+                    router.push('/admin');
+                } else {
+                    router.push('/merger');
+                }
+                router.refresh();
             } else {
-                const errorData = await response.json();
                 toast({
                     variant: 'destructive',
                     title: 'Login Failed',
-                    description: errorData.error || 'An unexpected error occurred.',
+                    description: data.error || 'An unexpected error occurred.',
                 });
             }
         } catch (error) {

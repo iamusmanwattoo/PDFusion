@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -44,8 +45,9 @@ export default function RegisterPage() {
             const data = await response.json();
 
             if (response.ok) {
-                toast({ title: 'Registration Successful!', description: "You can now log in."});
-                router.push('/login');
+                toast({ title: 'Registration Successful!', description: "You are now logged in."});
+                router.push('/merger');
+                router.refresh();
             } else {
                 toast({
                     variant: 'destructive',

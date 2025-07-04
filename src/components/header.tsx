@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -21,7 +22,10 @@ export const Header = ({ isAuthenticated, isAdmin }: HeaderProps) => {
     const handleLogout = async () => {
         setIsLoggingOut(true);
         try {
-            await fetch('/api/logout', { method: 'POST' });
+            const response = await fetch('/api/logout', { method: 'POST' });
+            if (!response.ok) {
+              throw new Error('Logout failed');
+            }
             toast({ title: "Logged Out", description: "You have been successfully logged out." });
             router.push('/');
             router.refresh();
